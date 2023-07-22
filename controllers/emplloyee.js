@@ -1,8 +1,10 @@
 const data = {
     employees: require('../model/employees.json'),
-    setEmployees: function (data) { this.employees = data }
+    setEmployees: function (data) {
+        this.employees = data
+    }
 }
-
+console.log(data.setEmployees);
 const getAllEmployees = (req, res) => {
     res.json(data.employees);
 }
@@ -30,9 +32,12 @@ const updateEmployee = (req, res) => {
     if (req.body.firstname) employee.firstname = req.body.firstname;
     if (req.body.lastname) employee.lastname = req.body.lastname;
     const filteredArray = data.employees.filter(emp => emp.id !== parseInt(req.body.id));
+
+
+    //*what we're doing here is that we're appending the updated employee to the new array and then making the shallow copying eg:const 0 [...[23,455],6] output: [23,455,6]
     const unsortedArray = [...filteredArray, employee];
     data.setEmployees(unsortedArray.sort((a, b) => a.id > b.id ? 1 : a.id < b.id ? -1 : 0));
-    res.json(data.employees);
+    res.status(201).json(data.employees);
 }
 
 const deleteEmployee = (req, res) => {
