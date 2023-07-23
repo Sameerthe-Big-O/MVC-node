@@ -6,7 +6,8 @@ const { logger } = require('./middleware/logEvents');
 const errorHandler = require('./middleware/errorHandler');
 const PORT = process.env.PORT || 3500;
 const { corsOptions } = require('./config/cors');
-
+const authVerify = require('./middleware/auth');
+const cookieParser = require('cookie-parser');
 // custom middleware logger
 app.use(logger);
 
@@ -19,14 +20,20 @@ app.use(express.urlencoded({ extended: false }));
 // built-in middleware for json 
 app.use(express.json());
 
+app.use(cookieParser());
 //serve static files
 app.use('/', express.static(path.join(__dirname, '/public')));
 app.use('/subdir', express.static(path.join(__dirname, '/public')));
 
 // routes
 app.use('/', require('./routes/root'));
+app.use('/register', require('./routes/register'));
+app.use('/auth', require('./routes/authController'));
+app.use('/refresh', require('./routes/refresh'));
+app.use(authVerify)
 app.use('/subdir', require('./routes/subdir'));
 app.use('/employees', require('./routes/api/employees'));
+
 
 app.all('*', (req, res) => {
     res.status(404);
